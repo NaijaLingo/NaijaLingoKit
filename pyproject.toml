@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naijaligo-asr"
+version = "0.1.0"
+description = "ASR SDK for Nigerian languages Yoruba, Igbo, Hausa and Nigerian-accented English using CTranslate2-converted Whisper models"
+readme = "README.md"
+authors = [{name = "NaijaLingo"}]
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+  "faster-whisper>=1.2.0",
+  "ctranslate2>=4.6.0",
+  "librosa>=0.11.0",
+  "numpy>=1.23"
+]
+
+[project.scripts]
+naijaligo-asr = "naijaligo_asr.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["naijaligo_asr*"]

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+*.egg-info/
+src/naijaligo_asr.egg-info/
+.dist/
+.build/
+.eggs/
+.venv/
+venv/
+.env
+.env.*
+.DS_Store
+pytest_cache/
+.coverage*
+htmlcov/
+.mypy_cache/
+.pytype/
+.ipynb_checkpoints/
+test_data/
+
+# Editors/OS
+.vscode/
+.idea/
+*
+!.gitignore
+!README.md
+!pyproject.toml
+!src/
+!tests/
+!Dockerfile
+!.dockerignore
+

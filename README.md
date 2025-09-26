@@ -5,13 +5,13 @@ ASR SDK for Nigerian languages using CTranslate2-converted Whisper models.
 ## Install
 
 ```bash
-pip install naijaligo-asr
+pip install naijalingo-asr
 ```
 
 ## Quickstart
 
 ```python
-from naijaligo_asr import transcribe
+from naijalingo_asr import transcribe
 
 text = transcribe("/path/to/audio.wav", language="yo")
 print(text)
@@ -20,25 +20,25 @@ print(text)
 ## CLI
 
 ```bash
-naijaligo-asr --audio /path/to/audio.wav --language yo
+naijalingo-asr --audio /path/to/audio.wav --language yo
 ```
 
-## Docker usage
+## Docker usage (no build required)
 
-Build the image (CPU):
+Pull the image (CPU):
 
 ```bash
-docker build -t naijaligo-asr:cpu .
+docker pull chukypedro/naijalingo-asr:latest
 ```
 
 Run transcription via CLI:
 
 ```bash
-docker run --rm -v $(pwd):/data naijaligo-asr:cpu \
-  naijaligo-asr --audio /data/audio.mp3 --language yo
+docker run --rm -v $(pwd):/data chukypedro/naijalingo-asr:latest \
+  naijalingo-asr --audio /data/audio.wav --language yo
 ```
 
-For GPU (CUDA), use a CUDA-enabled base and `--gpus all` (to be added later).
+For GPU (CUDA), a separate CUDA-enabled image will be provided later.
 
 ## Supported languages
 

@@ -6,8 +6,8 @@ __pycache__/
 *.pyo
 *.egg-info/
 src/naijaligo_asr.egg-info/
-.dist/
-.build/
+dist/
+build/
 .eggs/
 .venv/
 venv/
@@ -25,12 +25,5 @@ test_data/
 # Editors/OS
 .vscode/
 .idea/
-*
-!.gitignore
-!README.md
-!pyproject.toml
-!src/
-!tests/
-!Dockerfile
-!.dockerignore
+
 

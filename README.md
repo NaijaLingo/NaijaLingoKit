@@ -56,21 +56,4 @@ For GPU (CUDA), use a CUDA-enabled base and `--gpus all` (to be added later).
 
 Set via CLI `--log-level INFO` or env `NAIJALINGO_ASR_LOG=INFO`.
 
-## Publishing to PyPI
 
-1. Ensure metadata in `pyproject.toml` is correct.
-2. Build:
-   ```bash
-   pip install build twine
-   python -m build
-   ```
-3. Upload:
-   ```bash
-   twine upload dist/*
-   ```
-4. Install test:
-   ```bash
-   pip install naijaligo-asr
-   ```
-
-No `setup.py` is needed; this project uses PEP 621 `pyproject.toml` with setuptools.

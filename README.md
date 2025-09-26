@@ -31,7 +31,7 @@ Pull the image (CPU):
 docker pull chukypedro15/naijalingo-asr:cpu:latest
 ```
 
-Run transcription via CLI:
+Run transcription via Docker CMD:
 
 ```bash
 docker run --rm -v $(pwd):/data chukypedro/naijalingo-asr:latest \

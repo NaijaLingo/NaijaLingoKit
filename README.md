@@ -28,7 +28,7 @@ naijalingo-asr --audio /path/to/audio.wav --language yo
 Pull the image (CPU):
 
 ```bash
-docker pull chukypedro/naijalingo-asr:latest
+docker pull chukypedro15/naijalingo-asr:cpu:latest
 ```
 
 Run transcription via CLI:

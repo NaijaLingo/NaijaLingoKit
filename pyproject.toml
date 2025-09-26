@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "naijalingo-asr"
-version = "0.1.1"
+version = "0.1.0"
 description = "ASR SDK for Nigerian languages Yoruba, Igbo, Hausa and Nigerian-accented English using CTranslate2-converted Whisper models"
 readme = "README.md"
 authors = [{name = "NaijaLingo"}]

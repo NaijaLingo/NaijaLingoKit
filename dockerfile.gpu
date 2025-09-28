@@ -1,0 +1,66 @@
+# dockerfile.gpu
+# GPU build for NaijaLingo ASR by Chukwukwa Okolie and Adesoji alu Copyright NAIjalingo (faster-whisper / CTranslate2 on CUDA)
+
+# ---- Base: NVIDIA CUDA + cuDNN runtime (Ubuntu 22.04) ----
+# CUDA 12.4 works with ctranslate2>=4.5 (uses cuDNN v9). 
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+#FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu22.04 latest
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    # Typical NVIDIA envs (Docker runtime picks these up)
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# ---- OS deps & Python 3.12 ----
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common curl ca-certificates git gnupg \
+    build-essential pkg-config \
+    ffmpeg libsndfile1 \
+    && add-apt-repository ppa:deadsnakes/ppa -y \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    python3.12 python3.12-venv python3.12-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Make 3.12 the default "python3" and set up a clean venv
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
+
+# ---- Pip + CUDA-enabled CTranslate2 ----
+RUN python -m pip install --upgrade pip setuptools wheel
+
+# Pin ctranslate2 to a CUDA-capable build (>=4.5 uses cuDNN v9 / CUDA >=12.3)
+# Installing it first avoids resolution surprises when installing project deps.
+RUN pip install "ctranslate2>=4.5.0"
+
+# ---- App setup ----
+WORKDIR /app
+# Copy only metadata first for better Docker layer caching
+COPY pyproject.toml uv.lock ./
+# Copy the rest of the project
+COPY . .
+
+# Install the package (pulls faster-whisper and the rest)
+# If the project defines extras like [gpu], switch to: pip install ".[gpu]"
+RUN pip install --no-cache-dir .
+
+# (Optional) quick import sanity check; also prints CT2 version
+RUN python - <<'PY'
+import ctranslate2, importlib
+print("CTranslate2:", ctranslate2.__version__)
+try:
+    fw = importlib.import_module("faster_whisper")
+    print("faster-whisper:", fw.__version__)
+except Exception as e:
+    print("faster-whisper import not found:", e)
+PY
+
+# ---- Runtime defaults ----
+# For multi-threading control on CPU fallback; harmless on GPU.
+ENV OMP_NUM_THREADS=1
+
+# The repo’s README shows a CLI "naijalingo-asr ..."
+# so we expose that as the entrypoint. You can override with `docker run ... -- <args>`
+ENTRYPOINT ["naijalingo-asr"]
+CMD ["--help"]

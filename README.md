@@ -34,7 +34,7 @@ docker pull chukypedro15/naijalingo-asr:cpu:latest
 Run transcription via Docker CMD:
 
 ```bash
-docker run --rm -v $(pwd):/data chukypedro/naijalingo-asr:latest \
+docker run --rm -v $(pwd):/data chukypedro15/naijalingo-asr:cpu:latest \
   naijalingo-asr --audio /data/audio.wav --language yo
 ```
 

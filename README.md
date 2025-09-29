@@ -15,6 +15,9 @@ from naijalingo_asr import transcribe
 
 text = transcribe("/path/to/audio.wav", language="yo")
 print(text)
+
+text = transcribe("/path/to/igbo_audio.wav", language="ig")
+print(text)
 ```
 
 ## CLI

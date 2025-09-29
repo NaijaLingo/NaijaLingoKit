@@ -21,7 +21,8 @@ class WhisperEngine:
 
     def load(self) -> WhisperModel:
         if self._model is None:
-            self._log.debug("Loading WhisperModel repo=%s device=%s compute_type=%s", self.model_repo, self.config.device, self.config.compute_type)
+            self._log.info("Loading model from %s (device=%s, compute_type=%s). First use may download files...",
+                           self.model_repo, self.config.device, self.config.compute_type)
             self._model = WhisperModel(
                 self.model_repo,
                 device=self.config.device,

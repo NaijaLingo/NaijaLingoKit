@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 from .registry import get_repo_for_language
 from .engine import WhisperEngine, EngineConfig
 from .audio import load_audio_mono_16k
-from .logging_utils import configure_logging, get_logger
+from .logging_utils import configure_logging, get_logger, suppress_external_warnings
 
 
 @dataclass
@@ -24,6 +24,8 @@ class TranscribeOptions:
 class ASRTranscriber:
     def __init__(self, language: str, device: str = "auto", compute_type: str = "auto") -> None:
         repo = get_repo_for_language(language)
+        print(f"repo: {repo}")
+        print("-----------------------------------------------------------------------")
         self.language = language
         self.engine = WhisperEngine(repo, EngineConfig(device=device, compute_type=compute_type))
         self._log = get_logger(self.__class__.__name__)
@@ -38,9 +40,13 @@ class ASRTranscriber:
         audio_array = load_audio_mono_16k(audio_source) if isinstance(audio_source, str) else audio_source
         self._log.debug("Transcribe called: language=%s input_type=%s", self.language, type(audio_source).__name__)
 
+        # Business rule: decode Igbo with English tokenizer (library does not accept 'ig')
+        decode_language = "en" if self.language == "ig" else self.language
+        if decode_language != self.language:
+            self._log.info("Mapping requested language '%s' to '%s' for decoding", self.language, decode_language)
         segments, _ = self.engine.transcribe(
             audio_array,
-            language=self.language,
+            language=decode_language,
             beam_size=beam_size,
             vad_filter=vad_filter,
             temperature=temperature,
@@ -61,6 +67,8 @@ def transcribe(audio, language: str, **kwargs) -> str:
     # optional: allow caller to set log level via kwarg or env
     if "log_level" in kwargs:
         configure_logging(kwargs.pop("log_level"))
+    # Quiet noisy upstream warnings unless caller overrides env
+    suppress_external_warnings()
     transcriber = ASRTranscriber(
         language=language,
         device=kwargs.pop("device", "auto"),

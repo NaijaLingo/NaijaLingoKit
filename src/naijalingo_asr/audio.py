@@ -3,6 +3,8 @@ from typing import Union
 
 import numpy as np
 import librosa
+from pathlib import Path
+import os
 
 TARGET_SAMPLE_RATE = 16000
 
@@ -15,7 +17,9 @@ def load_audio_mono_16k(source: Union[str, np.ndarray], target_sr: int = TARGET_
       returns a mono array. If 2D, averages the channels. Does not resample.
     """
     if isinstance(source, str):
-        audio, _ = librosa.load(source, sr=target_sr, mono=True)
+        # Normalize and expand paths across OSes (Windows, Linux, macOS)
+        normalized = str(Path(os.path.expanduser(source)))
+        audio, _ = librosa.load(normalized, sr=target_sr, mono=True)
         return audio.astype(np.float32, copy=False)
 
     audio = np.asarray(source)

@@ -4,7 +4,7 @@ from .transcriber import transcribe
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="NaijaLingo ASR CLI")
-    p.add_argument("--audio", required=True, help="Path to audio file")
+    p.add_argument("--audio_path", required=True, help="Path to audio file")
     p.add_argument("--language", required=True, help="Language code (yo, ig, ha, en)")
     p.add_argument("--device", default="auto", help="Device: auto|cpu|cuda")
     p.add_argument("--compute-type", dest="compute_type", default="auto", help="auto|float16|int8|int8_float16")
@@ -21,7 +21,7 @@ def main() -> None:
     args = parser.parse_args()
 
     text = transcribe(
-        args.audio,
+        args.audio_path,
         language=args.language,
         device=args.device,
         compute_type=args.compute_type,

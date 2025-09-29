@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "naijalingo-asr"
-version = "0.1.0"
-description = "ASR SDK for Nigerian languages Yoruba, Igbo, Hausa and Nigerian-accented English using CTranslate2-converted Whisper models"
+version = "0.1.1"
+description = "Automatic Speech Recognition (ASR) SDK for Nigerian languages Yoruba, Igbo, Hausa, and Nigerian-accented English using CTranslate2-converted Whisper models"
 readme = "README.md"
 authors = [{name = "NaijaLingo"}]
 license = {text = "MIT"}
 requires-python = ">=3.9"
+
 dependencies = [
   "faster-whisper>=1.2.0",
   "ctranslate2>=4.6.0",
@@ -17,8 +18,40 @@ dependencies = [
   "numpy>=1.23"
 ]
 
+keywords = [
+  "ASR",
+  "speech recognition",
+  "automatic speech recognition",
+  "Nigerian languages",
+  "Yoruba",
+  "Igbo",
+  "Hausa",
+  "Nigerian English",
+  "faster-whisper",
+  "ctranslate2",
+  "whisper",
+  "transcription"
+]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Multimedia :: Sound/Audio :: Speech",
+  "Natural Language :: English"
+]
+
 [project.scripts]
 naijalingo-asr = "naijalingo_asr.cli:main"
+
+[project.urls]
+Homepage = "https://pypi.org/project/naijalingo-asr/"
+Source = "https://github.com/chukypedro/naijalingo-asr"
+Issues = "https://github.com/chukypedro/naijalingo-asr/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -26,3 +59,4 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["naijalingo_asr*"]
+

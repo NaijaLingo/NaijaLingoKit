@@ -20,25 +20,39 @@ print(text)
 ## CLI
 
 ```bash
-naijalingo-asr --audio /path/to/audio.wav --language yo
+naijalingo-asr --audio_path /path/to/audio.wav --language yo
 ```
 
-## Docker usage (no build required)
+### CLI options
 
-Pull the image (CPU):
+- `--language` (required): Language code (`yo`, `ig`, `ha`, `en`).
+- `--device` (optional): `auto` (default), `cpu`, or `cuda`.
+- `--compute-type` (optional): `auto` (default), `float16`, `int8`, `int8_float16`.
+- `--beam-size` (optional): Beam search size (default: `5`).
+- `--no-vad` (optional flag): Disable VAD filter (enabled by default).
+- `--temperature` (optional): Sampling temperature (default: `0.0`).
+- `--initial-prompt` (optional): Context prompt to prime decoding.
+- `--log-level` (optional): `DEBUG`, `INFO`, `WARNING` (default), `ERROR`.
+
+Examples:
 
 ```bash
-docker pull chukypedro15/naijalingo-asr:cpu:latest
+# GPU with float16
+naijalingo-asr --audio_path /path/to/audio.wav --language yo \
+  --device cuda --compute-type float16 --beam-size 5 --log-level INFO
+
+# CPU with int8
+naijalingo-asr --audio_path /path/to/audio.wav --language ig \
+  --device cpu --compute-type int8 --no-vad
+
+# With an initial prompt context
+naijalingo-asr --audio_path /path/to/audio.wav --language ha \
+  --initial-prompt "Medical conversation in Hausa"
 ```
 
-Run transcription via Docker CMD:
+## Docker
 
-```bash
-docker run --rm -v $(pwd):/data chukypedro15/naijalingo-asr:cpu:latest \
-  naijalingo-asr --audio /data/audio.wav --language yo
-```
-
-For GPU (CUDA), a separate CUDA-enabled image will be provided later.
+Docker support has been removed. Use the CLI or Python API instead.
 
 ## Supported languages
 

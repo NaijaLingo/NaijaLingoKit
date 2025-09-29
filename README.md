@@ -5,7 +5,7 @@ ASR SDK for Nigerian languages using CTranslate2-converted Whisper models.
 ## Install
 
 ```bash
-pip install naijalingo-asr
+pip install naijalingo-asr[audio]
 ```
 
 ## Quickstart
@@ -67,6 +67,7 @@ Docker support has been removed. Use the CLI or Python API instead.
 ## Notes
 - Uses faster-whisper (CTranslate2 backend)
 - Accepts file paths (mp3/wav/m4a/etc.) via librosa, or a numpy array (mono 16k)
+- No external ffmpeg required when installing with extras: `[audio]`
 - Task is transcription only; set `task="transcribe"` and the language code.
 
 ## Logging

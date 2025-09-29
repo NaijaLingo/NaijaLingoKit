@@ -44,8 +44,8 @@ def suppress_external_warnings() -> None:
     # Filter specific noisy warnings seen in practice
     warnings.filterwarnings(
         "ignore",
-        message=r"PySoundFile failed\. Trying audioread instead\.",
-        module=r"librosa\.core\.audio",
+        message=r"PySoundFile failed.*Trying audioread instead.*",
+        category=UserWarning,
     )
     warnings.filterwarnings(
         "ignore",

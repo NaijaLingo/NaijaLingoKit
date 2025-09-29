@@ -24,11 +24,10 @@ class TranscribeOptions:
 class ASRTranscriber:
     def __init__(self, language: str, device: str = "auto", compute_type: str = "auto") -> None:
         repo = get_repo_for_language(language)
-        print(f"repo: {repo}")
-        print("-----------------------------------------------------------------------")
         self.language = language
         self.engine = WhisperEngine(repo, EngineConfig(device=device, compute_type=compute_type))
         self._log = get_logger(self.__class__.__name__)
+        self._log.info("Using model repository: %s", repo)
 
     def transcribe(self, audio_source, **kwargs) -> str:
         beam_size = kwargs.pop("beam_size", 5)
@@ -44,7 +43,16 @@ class ASRTranscriber:
         decode_language = "en" if self.language == "ig" else self.language
         if decode_language != self.language:
             self._log.info("Mapping requested language '%s' to '%s' for decoding", self.language, decode_language)
-        segments, _ = self.engine.transcribe(
+        self._log.debug(
+            "Transcribe params: decode_language=%s beam_size=%s vad_filter=%s temperature=%s initial_prompt=%s",
+            decode_language,
+            beam_size,
+            vad_filter,
+            temperature,
+            initial_prompt,
+        )
+        print("Generating ASR transcription... for language: ", self.language)
+        segments_iter, _ = self.engine.transcribe(
             audio_array,
             language=decode_language,
             beam_size=beam_size,
@@ -53,7 +61,14 @@ class ASRTranscriber:
             initial_prompt=initial_prompt,
             **kwargs,
         )
-        return " ".join(seg.text for seg in segments)
+        texts: list[str] = []
+        for seg in segments_iter:
+            try:
+                self._log.info("[%0.2f → %0.2f] %s", float(seg.start), float(seg.end), seg.text)
+            except Exception:
+                self._log.info("Segment: %s", getattr(seg, "text", str(seg)))
+            texts.append(getattr(seg, "text", ""))
+        return " ".join(t for t in texts if t).strip()
 
 
 def transcribe(audio, language: str, **kwargs) -> str:

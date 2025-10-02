@@ -99,14 +99,9 @@ Set via CLI `--log-level INFO` or env `NAIJALINGO_ASR_LOG=INFO`.
 
 * [x] ✅ Core ASR SDK for Yoruba, Igbo, Hausa & Nigerian English (Python API + CLI).
 * [ ] Add benchmarks & accuracy evaluation (WER, per-language reports).
-* [ ] Support custom model loading & fine-tuning.
+* [ ] Support for Nigerian language fine-tuning.
 * [ ] Implement streaming / real-time transcription.
-* [ ] Expand language coverage & handle code-switching.
-
----
-
-
-
+* [ ] Expand language coverage.
 
 ---
 

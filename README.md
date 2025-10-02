@@ -93,16 +93,20 @@ Docker support has been removed. Use the CLI or Python API instead.
 Set via CLI `--log-level INFO` or env `NAIJALINGO_ASR_LOG=INFO`.
 
 
-Here’s a **short TODO list** version you can drop into the repo:
-
 ---
 
 ### TODO
 
+* [x] ✅ Core ASR SDK for Yoruba, Igbo, Hausa & Nigerian English (Python API + CLI).
 * [ ] Add benchmarks & accuracy evaluation (WER, per-language reports).
 * [ ] Support custom model loading & fine-tuning.
 * [ ] Implement streaming / real-time transcription.
 * [ ] Expand language coverage & handle code-switching.
+
+---
+
+
+
 
 ---
 

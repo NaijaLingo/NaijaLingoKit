@@ -2,6 +2,24 @@
 
 ASR SDK for Nigerian languages using CTranslate2-converted Whisper models.
 
+
+### **NaijaLingoKit Project Goal / Plan**
+
+The **goal of NaijaLingoKit** is to provide a **lightweight, production-ready Speech Recognition SDK** for **Nigerian languages** (Yoruba, Igbo, Hausa, and Nigerian-accented English).
+
+The plan is to make it easy for developers, researchers, and startups to:
+
+1. **Transcribe audio into text** in these languages using Python or the command line.
+2. **Support multiple environments** (CPU / GPU, float16 / int8, batch or single file).
+3. **Provide reproducible, open models** based on Whisper, optimized with **CTranslate2** for speed and efficiency.
+4. **Expand over time** to include:
+
+   * Real-time/streaming transcription,
+   * More Nigerian / African languages,
+   * Better handling of noisy, real-world data,
+   * Evaluation benchmarks to show accuracy and improvements.
+
+
 ## Install
 
 ```bash
@@ -73,5 +91,19 @@ Docker support has been removed. Use the CLI or Python API instead.
 ## Logging
 
 Set via CLI `--log-level INFO` or env `NAIJALINGO_ASR_LOG=INFO`.
+
+
+---
+
+### TODO
+
+* [x] ✅ Core ASR SDK for Yoruba, Igbo, Hausa & Nigerian English (Python API + CLI).
+* [ ] Add benchmarks & accuracy evaluation (WER, per-language reports).
+* [ ] Support for Nigerian language fine-tuning.
+* [ ] Implement streaming / real-time transcription.
+* [ ] Expand language coverage.
+
+---
+
 
 

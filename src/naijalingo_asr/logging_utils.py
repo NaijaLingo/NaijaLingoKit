@@ -21,6 +21,8 @@ def suppress_external_warnings() -> None:
     """Reduce verbosity of common upstream libs (Hugging Face, Transformers)."""
     # Disable Hugging Face Hub telemetry (keep progress bars visible)
     os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+    # Suppress Windows symlink cache warnings
+    os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
     try:
         from huggingface_hub import logging as hf_logging  # type: ignore

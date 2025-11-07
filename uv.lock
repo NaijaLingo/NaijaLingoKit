@@ -677,7 +677,7 @@ wheels = [
 
 [[package]]
 name = "naijalingo-asr"
-version = "0.1.0.post1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "ctranslate2" },

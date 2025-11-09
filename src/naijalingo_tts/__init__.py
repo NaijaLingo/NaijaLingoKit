@@ -1,4 +1,4 @@
-from .api import NaijaTTS, suppress_all_logs
+from .pipeline import NaijaTTS, suppress_all_logs
 
 __all__ = [
     "NaijaTTS",

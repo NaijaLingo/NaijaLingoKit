@@ -36,9 +36,11 @@ class NemoAudioPlayer:
 
     def __init__(self, config: TTSConfig, text_tokenizer_name: Optional[str] = None) -> None:
         self.conf = config
+        print(f"Downloading NeMo codec model: {self.conf.nanocodec_model} ...")
         self.nemo_codec_model = (
             AudioCodecModel.from_pretrained(self.conf.nanocodec_model).eval()
         )
+        print("NeMo codec model loaded.")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.nemo_codec_model.to(self.device)
 
@@ -126,19 +128,24 @@ class NaijaModel:
         model_name: str,
         player: NemoAudioPlayer,
         default_speakers: Optional[List[str]] = None,
+        hf_token: Optional[str] = None,
     ) -> None:
         self.conf = config
         self.player = player
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.hf_token = hf_token
 
         # Use bfloat16 (matches Kani-TTS defaults and your fine-tune); device_map controls placement.
+        print(f"Downloading TTS model: {model_name} ...")
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
             torch_dtype=torch.bfloat16,
             device_map=self.conf.device_map,
+            token=self.hf_token,
         )
+        print("TTS model loaded.")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, token=self.hf_token)
 
         # Speaker handling: read from model config if present; otherwise use provided defaults
         self.speaker_settings = getattr(self.model.config, "speaker_settings", None)

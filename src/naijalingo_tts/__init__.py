@@ -1,8 +1,11 @@
-from .pipeline import NaijaTTS, suppress_all_logs
+from .pipeline import NaijaLingoTTSClient, suppress_all_logs
+from .service_client import SpeechServiceTTSClient, SpeechServiceConfig
 
 __all__ = [
-    "NaijaTTS",
-    "suppress_all_logs",
+	"NaijaLingoTTSClient",
+	"suppress_all_logs",
+	"SpeechServiceTTSClient",
+	"SpeechServiceConfig",
 ]
 
 

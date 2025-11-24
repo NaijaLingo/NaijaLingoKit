@@ -1,92 +1,69 @@
 from __future__ import annotations
-from dataclasses import dataclass
 from typing import Optional, Dict, Any
+from pathlib import Path
+import tempfile
 
-from .registry import get_repo_for_language
-from .engine import WhisperEngine, EngineConfig
-from .audio import load_audio_mono_16k
-from .logging_utils import configure_logging, get_logger, suppress_external_warnings
+from .logging_utils import configure_logging, suppress_external_warnings, get_logger
+from .service_client import SpeechServiceClient, SpeechServiceConfig
 
 
-@dataclass
-class TranscribeOptions:
-    language: str
-    device: str = "auto"
-    compute_type: str = "auto"
-    beam_size: int = 5
-    vad_filter: bool = True
-    temperature: float = 0.0
-    initial_prompt: Optional[str] = None
-    # passthrough for future faster-whisper args
-    extra: Optional[Dict[str, Any]] = None
+_LOG = get_logger(__name__)
 
 
 class ASRTranscriber:
-    def __init__(self, language: str, device: str = "auto", compute_type: str = "auto") -> None:
-        repo = get_repo_for_language(language)
+    """
+    Thin wrapper that now proxies to the Speech Service.
+
+    Kept for backward compatibility. Parameters map to service call:
+      - language -> form field
+      - device   -> 'cpu'|'gpu'
+      - compute_type is ignored (handled server-side)
+    """
+
+    def __init__(self, language: str, device: str = "cpu", compute_type: str = "auto") -> None:
         self.language = language
-        self.engine = WhisperEngine(repo, EngineConfig(device=device, compute_type=compute_type))
+        self.device = "gpu" if device in {"cuda", "gpu"} else "cpu"
+        self.client = SpeechServiceClient()
         self._log = get_logger(self.__class__.__name__)
-        self._log.info("Using model repository: %s", repo)
+        self._log.info("ASRTranscriber proxying to Speech Service at %s", self.client.config.base_url)
 
     def transcribe(self, audio_source, **kwargs) -> str:
-        beam_size = kwargs.pop("beam_size", 5)
-        vad_filter = kwargs.pop("vad_filter", True)
-        temperature = kwargs.pop("temperature", 0.0)
-        initial_prompt = kwargs.pop("initial_prompt", None)
+        backend = kwargs.pop("backend", "whisper")
+        task = kwargs.pop("task", "transcribe")
+        language = kwargs.pop("language", self.language)
 
-        # Accept path-like or numpy array; always feed mono 16k float32 to engine
-        audio_array = load_audio_mono_16k(audio_source) if isinstance(audio_source, str) else audio_source
-        self._log.debug("Transcribe called: language=%s input_type=%s", self.language, type(audio_source).__name__)
+        # Only support file path input in this thin SDK for now
+        if not isinstance(audio_source, str):
+            raise TypeError("ASRTranscriber now expects a file path string for audio_source.")
+        path = Path(audio_source)
+        if not path.exists():
+            raise FileNotFoundError(f"Audio file not found: {path}")
 
-        # Business rule: decode Igbo with English tokenizer (library does not accept 'ig')
-        decode_language = "en" if self.language == "ig" else self.language
-        if decode_language != self.language:
-            self._log.info("Mapping requested language '%s' to '%s' for decoding", self.language, decode_language)
-        self._log.debug(
-            "Transcribe params: decode_language=%s beam_size=%s vad_filter=%s temperature=%s initial_prompt=%s",
-            decode_language,
-            beam_size,
-            vad_filter,
-            temperature,
-            initial_prompt,
+        self._log.debug("Calling speech service: backend=%s device=%s task=%s language=%s", backend, self.device, task, language)
+        result = self.client.transcribe(
+            str(path),
+            backend=backend,
+            device=self.device,
+            task=task,
+            language=language,
         )
-        print("Generating ASR transcription... for language: ", self.language)
-        segments_iter, _ = self.engine.transcribe(
-            audio_array,
-            language=decode_language,
-            beam_size=beam_size,
-            vad_filter=vad_filter,
-            temperature=temperature,
-            initial_prompt=initial_prompt,
-            **kwargs,
-        )
-        texts: list[str] = []
-        for seg in segments_iter:
-            try:
-                self._log.info("[%0.2f → %0.2f] %s", float(seg.start), float(seg.end), seg.text)
-            except Exception:
-                self._log.info("Segment: %s", getattr(seg, "text", str(seg)))
-            texts.append(getattr(seg, "text", ""))
-        return " ".join(t for t in texts if t).strip()
+        return (result.get("text") or "").strip()
 
 
-def transcribe(audio, language: str, **kwargs) -> str:
-    """Convenience function for one-shot transcription.
+def transcribe(audio_path: str, language: str, **kwargs) -> str:
+    """
+    Convenience function for one-shot transcription via Speech Service.
 
     Example:
-        text = transcribe("/path/file.wav", language="yo", device="cuda", compute_type="float16")
-        # or, using a numpy array preloaded at 16k mono:
-        # text = transcribe(audio_array, language="yo")
+        text = transcribe(\"/path/file.wav\", language=\"yo\", device=\"gpu\", backend=\"finetuned\")
     """
-    # optional: allow caller to set log level via kwarg or env
     if "log_level" in kwargs:
         configure_logging(kwargs.pop("log_level"))
-    # Quiet noisy upstream warnings unless caller overrides env
     suppress_external_warnings()
-    transcriber = ASRTranscriber(
-        language=language,
-        device=kwargs.pop("device", "auto"),
-        compute_type=kwargs.pop("compute_type", "auto"),
-    )
-    return transcriber.transcribe(audio, **kwargs)
+
+    device = kwargs.pop("device", "cpu")
+    backend = kwargs.pop("backend", "whisper")
+    task = kwargs.pop("task", "transcribe")
+
+    transcriber = ASRTranscriber(language=language, device=device)
+    return transcriber.transcribe(audio_path, backend=backend, task=task, language=language)
